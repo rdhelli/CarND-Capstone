@@ -47,6 +47,10 @@ class WaypointUpdater(object):
         while not rospy.is_shutdown():
             if None not in (self.current_pose, self.kd_tree):
                 closest_waypoint_idx = self.kd_tree.query(self.current_pose)[1]
+                final_waypoints_list = self.base_waypoints[closest_waypoint_idx:closest_waypoint_idx + 100]
+                final_points_pub = Lane()
+                final_points_pub.waypoints = final_waypoints_list
+                self.final_waypoints_pub.publish(final_points_pub)
             rate.sleep()
 
     def pose_cb(self, msg):
@@ -57,11 +61,9 @@ class WaypointUpdater(object):
 
     def waypoints_cb(self, lane):
         ## called once on startup
-        # save base waypoints as lane object
-        self.base_waypoints = lane
-        # create list of [x,y] waypoint positions to initialize kd_tree
-        kd_tree_pts = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in lane.waypoints]
-        self.kd_tree = KDTree(kd_tree_pts)
+        # save base waypoints as list of [x,y] coordinates
+        self.base_waypoints = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in lane.waypoints]
+        self.kd_tree = KDTree(self.base_waypoints)
 
     def traffic_cb(self, msg):
         # TODO: Callback for /traffic_waypoint message. Implement
