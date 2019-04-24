@@ -56,8 +56,10 @@ class WaypointUpdater(object):
         self.current_pose = [msg.pose.position.x, msg.pose.position.y]
 
     def waypoints_cb(self, lane):
-        # called once on startup
-        self.base_waypoints = lane
+        ## called once on startup
+        # save base waypoints as list of [x,y] coordinates
+        self.base_waypoints = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in lane.waypoints]
+        self.kd_tree = KDTree(self.base_waypoints)
 
     def traffic_cb(self, msg):
         # TODO: Callback for /traffic_waypoint message. Implement
