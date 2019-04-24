@@ -46,7 +46,12 @@ class WaypointUpdater(object):
         rate = rospy.Rate(10) # 10hz
         while not rospy.is_shutdown():
             if None not in (self.current_pose, self.kd_tree):
+                # get index of waypoint closest to the car
                 closest_waypoint_idx = self.kd_tree.query(self.current_pose)[1]
+                # publish list of base waypoints starting from the waypoint closest to the car
+                final_waypoints = Lane()
+                final_waypoints.waypoints = self.base_waypoints.waypoints[closest_waypoint_idx:closest_waypoint_idx + LOOKAHEAD_WPS]
+                self.final_waypoints_pub.publish(final_waypoints)
             rate.sleep()
 
     def pose_cb(self, msg):
