@@ -3,6 +3,7 @@
 import rospy
 from geometry_msgs.msg import PoseStamped
 from styx_msgs.msg import Lane, Waypoint
+from scipy.spatial import KDTree
 
 import math
 
@@ -39,6 +40,7 @@ class WaypointUpdater(object):
         # TODO: Add other member variables you need below
         self.current_pose = None
         self.base_waypoints = None
+        self.kd_tree = None # kd tree to conduct nearest neighbor search
 
         # publishing loop
         rate = rospy.Rate(10) # 10hz
