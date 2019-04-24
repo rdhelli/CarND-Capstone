@@ -45,8 +45,8 @@ class WaypointUpdater(object):
         # publishing loop
         rate = rospy.Rate(10) # 10hz
         while not rospy.is_shutdown():
-            if self.base_waypoints is not None:
-                pass
+            if None not in (self.current_pose, self.kd_tree):
+                closest_waypoint_idx = self.kd_tree.query(self.current_pose)[1]
             rate.sleep()
 
     def pose_cb(self, msg):
