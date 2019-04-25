@@ -4,6 +4,7 @@ import rospy
 from geometry_msgs.msg import PoseStamped
 from styx_msgs.msg import Lane, Waypoint
 from scipy.spatial import KDTree
+from scipy.spatial.distance import euclidean
 
 import math
 
@@ -48,6 +49,15 @@ class WaypointUpdater(object):
             if None not in (self.current_pose, self.kd_tree):
                 # get index of waypoint closest to the car
                 closest_waypoint_idx = self.kd_tree.query(self.current_pose)[1]
+                # check if point is behind or ahead of vehicle by comparing distance to previous point
+                previous_waypoint = [self.base_waypoints.waypoints[closest_waypoint_idx - 1].pose.pose.position.x, self.base_waypoints.waypoints[closest_waypoint_idx - 1].pose.pose.position.y]
+                current_waypoint = [self.base_waypoints.waypoints[closest_waypoint_idx].pose.pose.position.x, self.base_waypoints.waypoints[closest_waypoint_idx].pose.pose.position.y]
+                car_dist = euclidean(self.current_pose, previous_waypoint)
+                waypoint_dist = euclidean(current_waypoint, previous_waypoint)
+                # if the car is further away from the previous waypoint than the closest waypoint, then the closest waypoint is behind the car and we should take the next waypoint in the list
+                if car_dist > waypoint_dist:
+                    closest_waypoint_idx += 1
+
                 # publish list of base waypoints starting from the waypoint closest to the car
                 final_waypoints = Lane()
                 final_waypoints.waypoints = self.base_waypoints.waypoints[closest_waypoint_idx:closest_waypoint_idx + LOOKAHEAD_WPS]
