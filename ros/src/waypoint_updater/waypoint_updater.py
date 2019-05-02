@@ -56,7 +56,6 @@ class WaypointUpdater(object):
             if self.current_pose and self.base_waypoints:
                 final_lane = self.generate_lane()
                 self.final_waypoints_pub.publish(final_lane)
-                self.publish_waypoints()
             rate.sleep()
 
     def get_closest_waypoint_idx(self):
@@ -77,16 +76,16 @@ class WaypointUpdater(object):
         # publish list of base waypoints starting from the waypoint closest to the car
         closest_idx = self.get_closest_waypoint_idx()
         farthest_idx = closest_idx + LOOKAHEAD_WPS
-        base_waypoints = self.base_waypoints.waypoints[closest_idx:farthest_idx]
+        base_wps = self.base_waypoints.waypoints[closest_idx:farthest_idx]
         # modify base waypoints when red light in range
         if self.stopline_wp_idx == -1 or (self.stopline_wp_idx >= farthest_idx):
-            lane.waypoints = base_waypoints
+            lane.waypoints = base_wps
         else:
-            lane.waypoints = self.decelerate(base_waypoints, closest_idx)
+            lane.waypoints = self.decelerate(base_wps, closest_idx)
         return lane
 
     def decelerate(self, waypoints, closest_idx):
-        modified_waypoints = []
+        modified_wps = []
         for i, wp in enumerate(waypoints):
             p = Waypoint()
             p.pose = wp.pose
@@ -98,8 +97,8 @@ class WaypointUpdater(object):
                 vel = 0.
             vel = min(vel, self.get_waypoint_velocity(self, p))
             self.set_waypoint_velocity(self, p, vel)
-            modified_waypoints.append(p)
-        return modified_waypoints
+            modified_wps.append(p)
+        return modified_wps
 
     def pose_cb(self, msg):
         ## called at 50 hz
@@ -112,8 +111,9 @@ class WaypointUpdater(object):
         # save base waypoints as lane object
         self.base_waypoints = lane
         # create list of [x,y] waypoint positions to initialize kd_tree
-        kd_tree_pts = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in lane.waypoints]
-        self.kd_tree = KDTree(kd_tree_pts)
+        if not self.kd_tree:
+            kd_tree_pts = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in lane.waypoints]
+            self.kd_tree = KDTree(kd_tree_pts)
 
     def traffic_cb(self, msg):
         # DONE: Callback for /traffic_waypoint message. Implement
