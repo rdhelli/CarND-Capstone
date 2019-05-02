@@ -45,7 +45,6 @@ class WaypointUpdater(object):
         self.current_pose = None
         self.base_waypoints = None
         self.kd_tree = None # kd tree to conduct nearest neighbor search
-        self.base_lane = None
         self.stopline_wp_idx = -1
 
         self.loop()
@@ -54,7 +53,7 @@ class WaypointUpdater(object):
         # publishing loop
         rate = rospy.Rate(50) # 50hz
         while not rospy.is_shutdown():
-            if self.current_pose and self.base_lane:
+            if self.current_pose and self.base_waypoints:
                 final_lane = self.generate_lane()
                 self.final_waypoints_pub.publish(final_lane)
                 self.publish_waypoints()
