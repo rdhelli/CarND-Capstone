@@ -3,6 +3,8 @@
 import rospy
 from geometry_msgs.msg import PoseStamped
 from styx_msgs.msg import Lane, Waypoint
+from scipy.spatial import KDTree
+from scipy.spatial.distance import euclidean
 
 import math
 
@@ -21,7 +23,7 @@ as well as to verify your TL classifier.
 TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
-LOOKAHEAD_WPS = 200 # Number of waypoints we will publish. You can change this number
+LOOKAHEAD_WPS = 50 # Number of waypoints we will publish. You can change this number
 
 
 class WaypointUpdater(object):
@@ -39,12 +41,28 @@ class WaypointUpdater(object):
         # TODO: Add other member variables you need below
         self.current_pose = None
         self.base_waypoints = None
+        self.kd_tree = None # kd tree to conduct nearest neighbor search
+
 
         # publishing loop
         rate = rospy.Rate(10) # 10hz
         while not rospy.is_shutdown():
-            if self.base_waypoints is not None:
-                self.final_waypoints_pub.publish(self.base_waypoints)
+            if None not in (self.current_pose, self.kd_tree):
+                # get index of waypoint closest to the car
+                closest_waypoint_idx = self.kd_tree.query(self.current_pose)[1]
+                # check if point is behind or ahead of vehicle by comparing distance to previous point
+                previous_waypoint = [self.base_waypoints.waypoints[closest_waypoint_idx - 1].pose.pose.position.x, self.base_waypoints.waypoints[closest_waypoint_idx - 1].pose.pose.position.y]
+                current_waypoint = [self.base_waypoints.waypoints[closest_waypoint_idx].pose.pose.position.x, self.base_waypoints.waypoints[closest_waypoint_idx].pose.pose.position.y]
+                car_dist = euclidean(self.current_pose, previous_waypoint)
+                waypoint_dist = euclidean(current_waypoint, previous_waypoint)
+                # if the car is further away from the previous waypoint than the closest waypoint, then the closest waypoint is behind the car and we should take the next waypoint in the list
+                if car_dist > waypoint_dist:
+                    closest_waypoint_idx += 1
+
+                # publish list of base waypoints starting from the waypoint closest to the car
+                final_waypoints = Lane()
+                final_waypoints.waypoints = self.base_waypoints.waypoints[closest_waypoint_idx:closest_waypoint_idx + LOOKAHEAD_WPS]
+                self.final_waypoints_pub.publish(final_waypoints)
             rate.sleep()
 
     def pose_cb(self, msg):
@@ -54,8 +72,12 @@ class WaypointUpdater(object):
         self.current_pose = [msg.pose.position.x, msg.pose.position.y]
 
     def waypoints_cb(self, lane):
-        # called once on startup
+        ## called once on startup
+        # save base waypoints as lane object
         self.base_waypoints = lane
+        # create list of [x,y] waypoint positions to initialize kd_tree
+        kd_tree_pts = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in lane.waypoints]
+        self.kd_tree = KDTree(kd_tree_pts)
 
     def traffic_cb(self, msg):
         # TODO: Callback for /traffic_waypoint message. Implement
