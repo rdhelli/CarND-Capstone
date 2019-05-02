@@ -96,7 +96,7 @@ class WaypointUpdater(object):
             if vel < 1.:
                 vel = 0.
             vel = min(vel, self.get_waypoint_velocity(p))
-            self.set_waypoint_velocity(self, p, vel)
+            self.set_waypoint_velocity(p, vel)
             modified_wps.append(p)
         return modified_wps
 
