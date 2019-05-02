@@ -54,7 +54,7 @@ class WaypointUpdater(object):
         # publishing loop
         rate = rospy.Rate(50) # 50hz
         while not rospy.is_shutdown():
-            if None not in (self.current_pose, self.kd_tree, self.lane):
+            if None not in (self.current_pose, self.kd_tree, self.base_lane):
                 final_lane = self.generate_lane()
                 self.final_waypoints_pub.publish(final_lane)
                 self.publish_waypoints()
