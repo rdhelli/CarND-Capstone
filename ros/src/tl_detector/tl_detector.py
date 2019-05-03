@@ -8,7 +8,6 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 from light_classification.tl_classifier import TLClassifier
 import tf
-import cv2
 import yaml
 from scipy.spatial import KDTree
 
@@ -75,6 +74,9 @@ class TLDetector(object):
             msg (Image): image from car-mounted camera
 
         """
+        start_time = rospy.get_time()
+        if not self.pose:
+            return
         self.has_image = True
         self.camera_image = msg
         light_wp, state = self.process_traffic_lights()
@@ -96,6 +98,7 @@ class TLDetector(object):
         else:
             self.upcoming_red_light_pub.publish(Int32(self.last_wp))
         self.state_count += 1
+        rospy.loginfo("Log time : %.3f", rospy.get_time() - start_time)
 
     def get_closest_waypoint(self, x, y):
         """Identifies the closest path waypoint to the given position
@@ -120,15 +123,15 @@ class TLDetector(object):
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
 
         """
-        return light.state
-#         if(not self.has_image):
-#             self.prev_light_loc = None
-#             return False
+#         return light.state
+        if(not self.has_image):
+            self.prev_light_loc = None
+            return False
 
-#         cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
+        cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
 
-#         #Get classification
-#         return self.light_classifier.get_classification(cv_image)
+        #Get classification
+        return self.light_classifier.get_classification(cv_image)
 
     def process_traffic_lights(self):
         """Finds closest visible traffic light, if one exists, and determines its
