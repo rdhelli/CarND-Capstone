@@ -186,14 +186,14 @@ int getClosestWaypoint(const styx_msgs::Lane &current_path, geometry_msgs::Pose 
   std::vector<int> waypoint_candidates;
   for (int i = 1; i < wp.getSize(); i++)
   {
-    // if (getPlaneDistance(wp.getWaypointPosition(i), current_pose.position) > search_distance)
-    //   continue;
+    if (getPlaneDistance(wp.getWaypointPosition(i), current_pose.position) > search_distance)
+      continue;
 
     if (!wp.isFront(i, current_pose))
       continue;
 
-    // if (getRelativeAngle(wp.getWaypointPose(i), current_pose) > angle_threshold)
-    //   continue;
+    if (getRelativeAngle(wp.getWaypointPose(i), current_pose) > angle_threshold)
+      continue;
 
     waypoint_candidates.push_back(i);
   }
