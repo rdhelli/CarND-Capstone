@@ -17,8 +17,8 @@ class Controller(object):
 
         # Define PID tuning parameters for the throttle controller
         kp = 0.3
-        ki = 0.03 # 0.1
-        kd = 0.001 # 0.
+        ki = 0.1
+        kd = 0.
         mn = 0. # Minimum throttle value
         mx = 0.2 # Maximum throttle value
         self.throttle_controller = PID(kp, ki, kd, mn, mx)
