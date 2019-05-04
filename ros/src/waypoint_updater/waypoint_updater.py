@@ -78,7 +78,7 @@ class WaypointUpdater(object):
         farthest_idx = closest_idx + LOOKAHEAD_WPS
         base_wps = self.base_waypoints.waypoints[closest_idx:farthest_idx]
         # modify base waypoints when red light in range
-        if self.stopline_wp_idx == -1 or not (closest_idx <= self.stopline_wp_idx <= farthest_idx):
+        if self.stopline_wp_idx == -1 or self.stopline_wp_idx >= farthest_idx:
             lane.waypoints = base_wps
         else:
             lane.waypoints = self.decelerate(base_wps, closest_idx)
