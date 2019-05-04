@@ -68,7 +68,7 @@ class WaypointUpdater(object):
         waypoint_dist = euclidean(current_waypoint, previous_waypoint)
         # if the car is further away from the previous waypoint than the closest waypoint, then the closest waypoint is behind the car and we should take the next waypoint in the list
         if car_dist > waypoint_dist:
-            closest_waypoint_idx = (closest_waypoint_idx + 1) % len(self.base_waypoints)
+            closest_waypoint_idx = (closest_waypoint_idx + 1) % len(self.base_waypoints.waypoints)
         return closest_waypoint_idx
     
     def generate_lane(self):
