@@ -72,7 +72,8 @@ class WaypointUpdater(object):
         return closest_waypoint_idx
     
     def generate_lane(self):
-        lane = Lane()     
+        lane = Lane()
+        lane.header = self.base_waypoints.header
         # publish list of base waypoints starting from the waypoint closest to the car
         closest_idx = self.get_closest_waypoint_idx()
         farthest_idx = closest_idx + LOOKAHEAD_WPS
