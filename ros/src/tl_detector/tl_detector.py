@@ -156,7 +156,7 @@ class TLDetector(object):
                 if 0 <= d < diff:
                     diff = d
                     light = light_count
-                    line_wp_idx = temp_wp_idx
+                    light_wp = temp_wp_idx
         if light:
             state = self.get_light_state(light)
             return light_wp, state
