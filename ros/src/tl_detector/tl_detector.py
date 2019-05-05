@@ -12,7 +12,7 @@ import yaml
 from scipy.spatial import KDTree
 
 STATE_COUNT_THRESHOLD = 3
-EVERY_NTH_FRAME = 4
+# EVERY_NTH_FRAME = 4
 
 class TLDetector(object):
     def __init__(self):
@@ -76,34 +76,34 @@ class TLDetector(object):
             msg (Image): image from car-mounted camera
 
         """
-        if self.frame_counter % EVERY_NTH_FRAME == 0:
-            start_time = rospy.get_time()
-            if not self.pose:
-                return
-            self.has_image = True
-            self.camera_image = msg
-            light_wp, state = self.process_traffic_lights()
-    
-            '''
-            Publish upcoming red lights at camera frequency.
-            Each predicted state has to occur `STATE_COUNT_THRESHOLD` number
-            of times till we start using it. Otherwise the previous stable state is
-            used.
-            '''
-            if self.state != state:
-                self.state_count = 0
-                self.state = state
-            elif self.state_count >= STATE_COUNT_THRESHOLD:
-                self.last_state = self.state
-                light_wp = light_wp if state == TrafficLight.RED else -1
-                self.last_wp = light_wp
-                self.upcoming_red_light_pub.publish(Int32(light_wp))
-            else:
-                self.upcoming_red_light_pub.publish(Int32(self.last_wp))
-            self.state_count += 1
-            rospy.loginfo("Log time : %.3f", rospy.get_time() - start_time)
+        # if self.frame_counter % EVERY_NTH_FRAME == 0:
+        start_time = rospy.get_time()
+        if not self.pose:
+            return
+        self.has_image = True
+        self.camera_image = msg
+        light_wp, state = self.process_traffic_lights()
+
+        '''
+        Publish upcoming red lights at camera frequency.
+        Each predicted state has to occur `STATE_COUNT_THRESHOLD` number
+        of times till we start using it. Otherwise the previous stable state is
+        used.
+        '''
+        if self.state != state:
+            self.state_count = 0
+            self.state = state
+        elif self.state_count >= STATE_COUNT_THRESHOLD:
+            self.last_state = self.state
+            light_wp = light_wp if state == TrafficLight.RED else -1
+            self.last_wp = light_wp
+            self.upcoming_red_light_pub.publish(Int32(light_wp))
+        else:
+            self.upcoming_red_light_pub.publish(Int32(self.last_wp))
+        self.state_count += 1
+        rospy.loginfo("Log time : %.3f", rospy.get_time() - start_time)
         
-        self.frame_counter = (self.frame_counter + 1) % EVERY_NTH_FRAME
+        # self.frame_counter = (self.frame_counter + 1) % EVERY_NTH_FRAME
 
     def get_closest_waypoint(self, x, y):
         """Identifies the closest path waypoint to the given position
