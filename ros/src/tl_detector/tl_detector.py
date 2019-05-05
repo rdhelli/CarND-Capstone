@@ -76,7 +76,7 @@ class TLDetector(object):
             msg (Image): image from car-mounted camera
 
         """
-        if self.frame_counter == EVERY_NTH_FRAME:
+        if self.frame_counter % EVERY_NTH_FRAME == 0:
             start_time = rospy.get_time()
             if not self.pose:
                 return
