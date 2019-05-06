@@ -182,7 +182,6 @@ int getClosestWaypoint(const styx_msgs::Lane &current_path, geometry_msgs::Pose 
 
   // search closest candidate within a certain meter
   double search_distance = 5.0;
-  double angle_threshold = 90;
   std::vector<int> waypoint_candidates;
   for (int i = 1; i < wp.getSize(); i++)
   {
@@ -192,6 +191,7 @@ int getClosestWaypoint(const styx_msgs::Lane &current_path, geometry_msgs::Pose 
     if (!wp.isFront(i, current_pose))
       continue;
 
+    double angle_threshold = 90;
     if (getRelativeAngle(wp.getWaypointPose(i), current_pose) > angle_threshold)
       continue;
 

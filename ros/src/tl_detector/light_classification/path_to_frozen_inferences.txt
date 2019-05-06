@@ -1,2 +1,0 @@
-- Install .pb files from the following location to /light_classification/models
-- https://drive.google.com/open?id=1CSCMGZ6C-9cPIVaU8Y_ZzxSLQS6dToaW
