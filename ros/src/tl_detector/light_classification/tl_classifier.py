@@ -8,6 +8,7 @@ import cv2
 
 class TLClassifier(object):
     def __init__(self):
+        #TODO load classifier
         self.current_light = TrafficLight.UNKNOWN
         file_path = os.path.dirname(os.path.abspath(__file__))
         model_path = os.path.join(file_path, 'models', 'optimized_graph_sim.pb')
@@ -40,27 +41,29 @@ class TLClassifier(object):
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
 
         """
+        #TODO implement light color prediction
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image_rescale = cv2.resize(src=image_rgb, dsize=(256, 256))
+        # Expand dimension since the model expects image to have shape [1, None, None, 3].
+        img_expanded = np.expand_dims(image_rescale, axis=0) 
         with self.detection_graph.as_default():
-            # Expand dimension since the model expects image to have shape [1, None, None, 3].
-            img_expanded = np.expand_dims(image_rgb, axis=0)  
             (boxes, scores, classes, num) = self.sess.run(
                 [self.d_boxes, self.d_scores, self.d_classes, self.num_d],
                 feed_dict={self.image_tensor: img_expanded})
 
-        boxes = np.squeeze(boxes)
+        # boxes = np.squeeze(boxes)
         scores = np.squeeze(scores)
         classes = np.squeeze(classes).astype(np.int32)
         
-        if scores[0] > 0.15: 
+        if scores[0] > 0.6: 
             if classes[0] == 1:
-                rospy.loginfo('This is Green')
+                rospy.loginfo(str(scores[0])+' : GREEN Light')
                 return TrafficLight.GREEN
             elif classes[0] == 2:
-                rospy.loginfo('This is Red')
+                rospy.loginfo(str(scores[0])+' : RED Light')
                 return TrafficLight.RED
             elif classes[0] == 3:
-                rospy.loginfo('This is Yellow')
+                rospy.loginfo(str(scores[0])+' : YELLOW Light')
                 return TrafficLight.YELLOW
         else:
             return TrafficLight.UNKNOWN
