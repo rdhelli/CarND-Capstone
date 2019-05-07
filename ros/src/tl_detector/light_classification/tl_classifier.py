@@ -10,7 +10,7 @@ class TLClassifier(object):
     def __init__(self):
         self.current_light = TrafficLight.UNKNOWN
         file_path = os.path.dirname(os.path.abspath(__file__))
-        model_path = os.path.join(file_path, 'models', 'frozen_inference_graph_sim.pb')
+        model_path = os.path.join(file_path, 'models', 'optimized_graph_sim.pb')
         rospy.logwarn("model_path={}".format(model_path))
         
         self.detection_graph = tf.Graph()
