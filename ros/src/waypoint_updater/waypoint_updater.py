@@ -53,7 +53,7 @@ class WaypointUpdater(object):
         # publishing loop
         rate = rospy.Rate(30) # 50hz
         while not rospy.is_shutdown():
-            if not None in (self.current_pose, self.base_waypoints):
+            if self.current_pose and self.base_waypoints:
                 final_lane = self.generate_lane()
                 self.final_waypoints_pub.publish(final_lane)
             rate.sleep()
@@ -77,7 +77,12 @@ class WaypointUpdater(object):
         # publish list of base waypoints starting from the waypoint closest to the car
         closest_idx = self.get_closest_waypoint_idx()
         farthest_idx = closest_idx + LOOKAHEAD_WPS
-        base_wps = self.base_waypoints.waypoints[closest_idx:farthest_idx]
+        wp_idx_max = len(self.base_waypoints.waypoints)
+        if farthest_idx <= wp_idx_max:
+            base_wps = self.base_waypoints.waypoints[closest_idx:farthest_idx]
+        # pick wp index from the beginning, if the indices flow over
+        else:
+            base_wps = [self.base_waypoints.waypoints[idx % wp_idx_max] for idx in range(closest_idx,farthest_idx)]
         # modify base waypoints when red light in range
         if self.stopline_wp_idx == -1 or self.stopline_wp_idx >= farthest_idx:
             lane.waypoints = base_wps
