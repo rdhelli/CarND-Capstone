@@ -6,13 +6,13 @@ Based on the state of the traffic light, the waypoints are updated to determine 
 
 ### DATASET PREPARATION
 
-To obtain a good training dataset, we recorded a video sequence from the simulator and used it to annotate the images. We used VGG Image Annotation ( [VIA Annotation Tool]( http://www.robots.ox.ac.uk/~vgg/software/via/via.html))  for this purpose.
+To obtain a good training dataset, we recorded a video sequence from the simulator and used it to annotate the images. We used VGG Image Annotation ([VIA Annotation Tool]( http://www.robots.ox.ac.uk/~vgg/software/via/via.html))  for this purpose.
 The tool developed by Oxford University allows to drag rectangles over the image and can be used to generate csv or json files.
 More than 150 images were annotated for the simulation environment and 50 images from the real environment. 
 
 This was further compiled with the datasets from the previous students to improve performance. Thanks to [ooleksyuk](https://github.com/ooleksyuk/CarND-Traffic-Light-Detector-Classifier) and [Az4z3l](https://github.com/Az4z3l/CarND-Traffic-Light-Detection) for their efforts and providing us with bigger datasets. This really helped us increase the dataset to over 200 images per each class.
 
-We highly appreciate the blog by [WuStandDan](https://medium.com/@WuStangDan/step-by-step-tensorflow-object-detection-api-tutorial-part-1-selecting-a-model-a02b6aabe39e) for the generation of the TF records and the training process. However, due the latest modifications in the Tensorflow object detection API, certain python functions had to be picked from legacy versions, recreated and merged to be able to use.
+We highly appreciate the blog by [WuStangDan](https://medium.com/@WuStangDan/step-by-step-tensorflow-object-detection-api-tutorial-part-1-selecting-a-model-a02b6aabe39e) for the generation of the TF records and the training process. However, due the latest modifications in the Tensorflow object detection API, certain python functions had to be picked from legacy versions, recreated and merged to be able to use.
 
 Due to the different format of the annotated images, a converter was created to generate XML files from CSV and YAML formats containing the image as the key, the image size, bounding box regions and the classes. The XML files were then used to create the TFrecord files for tensorflow training and testing.
 
@@ -34,7 +34,7 @@ This is obtained from documentation [here](https://github.com/tensorflow/models/
 The training was run on 4x 1080 GTX GPY system for over 12 hours and the inference models were picked from the 20000 checkpoint.
 The below parameters were set in as json inputs while running the training:
 
-		"anchors":              [3,9, 4,13, 5,17, 6,20, 7,22, 9,30, 11,34, 15,46, 20,27],
+	"anchors":              [3,9, 4,13, 5,17, 6,20, 7,22, 9,30, 11,34, 15,46, 20,27],
         "labels":               ["red", "yellow", "green"],
         "train_times":          2,
         "batch_size":           8,
@@ -64,7 +64,7 @@ Due to the large computational time and the large size of ~ 200 MB for the pb mo
 		--transforms='strip_unused_nodes(type=uint8, shape="1,299,299,3") fold_constants(ignore_errors=true) fold_batch_norms fold_old_batch_norms quantize_weights'
 
 
-TROUBLESHOOTING
+### TROUBLESHOOTING
 
 1. Missing dbw_mkz_msgs ros packages in workspace.
 Everytime the workspace is restarted the ros packages need to be reinstalled. The following package errors are displayed.
