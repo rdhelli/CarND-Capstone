@@ -11,7 +11,7 @@ class TLClassifier(object):
         #TODO load classifier
         self.current_light = TrafficLight.UNKNOWN
         file_path = os.path.dirname(os.path.abspath(__file__))
-        model_path = os.path.join(file_path, 'models', 'optimized_graph_sim.pb')
+        model_path = os.path.join(file_path, 'models', 'ssd_mobilenet_sim.pb')
         rospy.logwarn("model_path={}".format(model_path))
         
         self.detection_graph = tf.Graph()
