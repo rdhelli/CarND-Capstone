@@ -54,7 +54,7 @@ Further on, the model was exported from the checkpoint file using the following 
 
 ### OPTIMIZE NETWORK
 
-Due to the large computational time and the large size of ~ 200 MB for the pb model, the model could not be used for evaluation for the use in this project. Thus, along with the improvisation of the inference time, we had to ensure that the network is less than 100 MB. Due to the availability of limited data, there was a possibility of augmenting the data further. But this would not have reduce the size. To optimize the network, we used the transform_graph script by tensorflow and used it to optimize the weights. This used the existing frozen model, removed the unused nodes, converting them from floats to ints and quantizing the weights. The resultant optimized model was reduced to less than 50MB. On evaluating with the workspace, the inference time turned out to be around 0.2 secs.  
+Due to the large computational time and the large size of ~ 200 MB for the pb model, the model could not be used for evaluation for the use in this project. Thus, along with the improvisation of the inference time, we had to ensure that the network is less than 100 MB. Due to the availability of limited data, there was a possibility of augmenting the data further. But this would not have reduce the size. To optimize the network, we used the transform_graph script by tensorflow and used it to optimize the weights. This used the existing frozen model, removed the unused nodes, converting them from floats to ints and quantizing the weights. The resultant optimized model was reduced to less than 50MB. On evaluating with the workspace, the inference time turned out to be around 0.2 secs.
 
 	bazel-bin/tensorflow/tools/graph_transforms/transform_graph \
 		--in_graph=/models/frozen_inference_graph_sim.pb \
@@ -63,6 +63,10 @@ Due to the large computational time and the large size of ~ 200 MB for the pb mo
 		--outputs='detection_boxes,detection_scores,detection_classes,num_detections' 
 		--transforms='strip_unused_nodes(type=uint8, shape="1,299,299,3") fold_constants(ignore_errors=true) fold_batch_norms fold_old_batch_norms quantize_weights'
 
+
+### IMPROVING INFERENCE TIME
+
+A number of attempts were made testing the inference on the workspace, virtual machines and native environments. We attempted to use the map data to run the inference only when the car is about 300 waypoints away from the traffic light. The average inference time was noted around 0.22 seconds with the rfcn network on the workspace. To avoid the delay due to the large network, we trained our network with ssd_mobilenet. This new model being extremely light-weight, we observed a huge drop in the inference time resulting to 0.02 seconds. However, due to the environment testing condition, the classified netowrk output seemed to have a delay of about 4 seconds to the human eye. This could be caused due to the hardware constraints and its a challenge to view the best possible results.
 
 ### TROUBLESHOOTING
 
