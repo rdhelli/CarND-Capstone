@@ -100,7 +100,7 @@ class TLDetector(object):
             else:
                 self.upcoming_red_light_pub.publish(Int32(self.last_wp))
             self.state_count += 1
-            rospy.loginfo("Log time : %.3f", rospy.get_time() - start_time)
+            #rospy.loginfo("Log time : %.3f", rospy.get_time() - start_time)
         except:
             rospy.logwarn("State not ready yet.")
             
@@ -127,7 +127,7 @@ class TLDetector(object):
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
 
         """
-#         return light.state
+#        return light.state
         if(not self.has_image):
             self.prev_light_loc = None
             return False
@@ -170,7 +170,7 @@ class TLDetector(object):
                         diff = d
                         light = light_count
                         light_wp = temp_wp_idx
-                rospy.loginfo("Light index : %d, Car index: %d", light_wp, car_wp_idx)
+                #rospy.loginfo("Light index : %d, Car index: %d", light_wp, car_wp_idx)
             if light and (-10 < (light_wp - car_wp_idx) < 300):
                 state = self.get_light_state(light)
                 return light_wp, state

@@ -57,13 +57,13 @@ class TLClassifier(object):
         
         if scores[0] > 0.6: 
             if classes[0] == 1:
-                rospy.loginfo(str(scores[0])+' : GREEN Light')
+                #rospy.loginfo(str(scores[0])+' : GREEN Light')
                 return TrafficLight.GREEN
             elif classes[0] == 2:
-                rospy.loginfo(str(scores[0])+' : RED Light')
+                #rospy.loginfo(str(scores[0])+' : RED Light')
                 return TrafficLight.RED
             elif classes[0] == 3:
-                rospy.loginfo(str(scores[0])+' : YELLOW Light')
+                #rospy.loginfo(str(scores[0])+' : YELLOW Light')
                 return TrafficLight.YELLOW
         else:
             return TrafficLight.UNKNOWN
