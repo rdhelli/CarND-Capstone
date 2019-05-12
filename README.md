@@ -5,7 +5,7 @@ This is the project repo for the final project of the Udacity Self-Driving Car N
 # TEAM MEMBERS
 * Steve Frazee - stevefrazee123@gmail.com
 * Sumit Chopra - sumitch@umich.edu
-* Agneev Guin - agneevguin@gmail.com
+* Agneev Guin - agneev@kth.se
 * Márton Helli - rdhelli@gmail.com
 
 
