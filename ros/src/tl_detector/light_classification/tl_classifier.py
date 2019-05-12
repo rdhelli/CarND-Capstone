@@ -7,11 +7,15 @@ import os
 import cv2
 
 class TLClassifier(object):
-    def __init__(self):
-        #TODO load classifier
+    def __init__(self, site):
+        self.is_site = site # Gets value from config file
+        # Load classifier
         self.current_light = TrafficLight.UNKNOWN
         file_path = os.path.dirname(os.path.abspath(__file__))
-        model_path = os.path.join(file_path, 'models', 'ssd_mobilenet_sim.pb')
+        if self.is_site:
+            model_path = os.path.join(file_path, 'models', 'ssd_mobilenet_real.pb')
+        else:
+            model_path = os.path.join(file_path, 'models', 'ssd_mobilenet_sim.pb')
         rospy.logwarn("model_path={}".format(model_path))
         
         self.detection_graph = tf.Graph()
@@ -41,7 +45,7 @@ class TLClassifier(object):
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
 
         """
-        #TODO implement light color prediction
+        # Implement light color prediction
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image_rescale = cv2.resize(src=image_rgb, dsize=(256, 256))
         # Expand dimension since the model expects image to have shape [1, None, None, 3].
