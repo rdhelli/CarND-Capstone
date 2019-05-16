@@ -39,7 +39,7 @@ class Controller(object):
         self.wheel_radius = wheel_radius
      
         self.last_time = rospy.get_time()
-        self.throttle_controller = PID(kp, ki, kd, -5, 1)
+        self.throttle_controller = PID(kp, ki, kd, -5, .4)
         
     def control(self, current_vel, dbw_enabled, linear_vel, angular_vel):
         # The function uses the YawController class and PID class to calculate the throttle, steering inputs and applies the brake based on throttle, velocity.
